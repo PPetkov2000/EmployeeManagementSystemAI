@@ -19,7 +19,7 @@ const getVacationRequestsByUserId = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .populate('employee', 'name');
 
-  if (!vacationRequests.length) {
+  if (!vacationRequests) {
     logger.info(`No vacation requests found for user ${userId}`);
     return res.status(404).json({ message: 'No vacation requests found for this user' });
   }
@@ -87,9 +87,9 @@ const updateVacationRequest = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    getAllVacationRequests,
-    getVacationRequestsByUserId,
-    getVacationRequestDetails,
-    createVacationRequest,
-    updateVacationRequest
+  getAllVacationRequests,
+  getVacationRequestsByUserId,
+  getVacationRequestDetails,
+  createVacationRequest,
+  updateVacationRequest
 };

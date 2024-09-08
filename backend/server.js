@@ -4,11 +4,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('./utils/logger');
+const { cookie_auth } = require('./config');
 
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const userPerformanceRoutes = require('./routes/userPerformanceRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const vacationRoutes = require('./routes/vacationRoutes');
-const { cookie_auth } = require('./config');
+const seedRoutes = require('./routes/seedRoutes');
 
 const app = express();
 
@@ -30,8 +33,11 @@ app.use((req, res, next) => {
 mongoose.connect(process.env.MONGODB_URI);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/user-performance', userPerformanceRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/vacations', vacationRoutes);
+app.use('/api/seed', seedRoutes);
 
 app.use((err, req, res, next) => {
   logger.error(err.message, { stack: err.stack });

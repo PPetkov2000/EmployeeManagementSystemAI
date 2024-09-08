@@ -33,6 +33,9 @@ const updateEmployee = asyncHandler(async (req, res) => {
     employee.name = req.body.name || employee.name;
     employee.email = req.body.email || employee.email;
     employee.position = req.body.position || employee.position;
+    employee.department = req.body.department || employee.department;
+    employee.salary = req.body.salary || employee.salary;
+    employee.performanceScore = req.body.performanceScore || employee.performanceScore;
     employee.vacationDays = req.body.vacationDays || employee.vacationDays;
     const updatedEmployee = await employee.save();
     logger.info(`Updated employee ${req.params.id}`, { userId: req.user._id });
@@ -55,60 +58,10 @@ const deleteEmployee = asyncHandler(async (req, res) => {
   }
 });
 
-const getEmployeeStats = async (req, res) => {
-  try {
-    const totalEmployees = await Employee.countDocuments();
-    const departmentCounts = await Employee.aggregate([
-      { $group: { _id: "$department", count: { $sum: 1 } } }
-    ]);
-    const averageSalary = await Employee.aggregate([
-      { $group: { _id: null, avg: { $avg: "$salary" } } }
-    ]);
-
-    res.status(200).json({
-      totalEmployees,
-      departmentCounts,
-      averageSalary: averageSalary[0]?.avg || 0
-    });
-  } catch (error) {
-    logger.error('Error fetching employee stats:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-}
-
-const getEmployeePerformance = async (req, res) => {
-  try {
-    const performanceData = await Employee.aggregate([
-      {
-        $group: {
-          _id: null,
-          averagePerformance: { $avg: "$performanceScore" },
-          topPerformers: { $push: { $cond: [{ $gte: ["$performanceScore", 90] }, "$$ROOT", null] } },
-          lowPerformers: { $push: { $cond: [{ $lte: ["$performanceScore", 60] }, "$$ROOT", null] } }
-        }
-      },
-      {
-        $project: {
-          averagePerformance: 1,
-          topPerformers: { $slice: [{ $filter: { input: "$topPerformers", as: "emp", cond: { $ne: ["$$emp", null] } } }, 5] },
-          lowPerformers: { $slice: [{ $filter: { input: "$lowPerformers", as: "emp", cond: { $ne: ["$$emp", null] } } }, 5] }
-        }
-      }
-    ]);
-
-    res.status(200).json(performanceData[0] || { averagePerformance: 0, topPerformers: [], lowPerformers: [] });
-  } catch (error) {
-    logger.error('Error fetching employee performance:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-}
-
 module.exports = {
   getEmployees,
   getEmployee,
   createEmployee,
   updateEmployee,
-  deleteEmployee,
-  getEmployeeStats,
-  getEmployeePerformance
+  deleteEmployee
 };

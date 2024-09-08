@@ -17,8 +17,4 @@ router
   .put(authorize('admin'), updateEmployee)
   .delete(authorize('admin'), deleteEmployee);
 
-router.get('/stats', authorize('admin', 'manager'), getEmployeeStats);
-
-router.get('/performance', authorize('admin', 'manager'), getEmployeePerformance);
-
 module.exports = router;

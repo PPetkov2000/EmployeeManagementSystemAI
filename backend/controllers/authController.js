@@ -18,9 +18,18 @@ const register = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
-  const verificationToken = crypto.randomBytes(20).toString('hex');
-  const user = await User.create({ name, email, password: hashedPassword, verificationToken });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+    ...(email_verification && {
+      verificationToken: crypto.randomBytes(20).toString('hex'),
+      isVerified: false
+    }),
+    ...(!email_verification && { isVerified: true })
+  });
+
   logger.info(`User registered successfully: ${user._id}`);
 
   if (email_verification) {
@@ -72,8 +81,8 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-    res.clearCookie('auth-token');
-    res.json({ message: 'Logged out successfully' });
+  res.clearCookie('auth-token');
+  res.json({ message: 'Logged out successfully' });
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
@@ -99,6 +108,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
+  if (!req.body?.password) {
+    logger.warn('Password reset failed: No password provided');
+    return res.status(400).json({ message: 'Password is required' });
+  }
+
   const { token } = req.params;
   const { password } = req.body;
   logger.info(`Attempting to reset password with token: ${token}`);
@@ -124,6 +138,11 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 const changePassword = asyncHandler(async (req, res) => {
+  if (!req.body?.newPassword) {
+    logger.warn('Change password failed: No password provided');
+    return res.status(400).json({ message: 'Password is required' });
+  }
+
   const { currentPassword, newPassword } = req.body;
   logger.info(`Attempting to change password for user: ${req.user._id}`);
 
@@ -144,7 +163,7 @@ const changePassword = asyncHandler(async (req, res) => {
 const verifyEmail = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const user = await User.findOne({ verificationToken: token });
-  
+
   if (!user) {
     logger.warn(`Email verification failed: Invalid or expired token: ${token}`);
     return res.status(400).json({ message: 'Invalid or expired token' });
