@@ -1,14 +1,9 @@
 import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
-const resetPassword = async ({ token, password }) => {
-  const response = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
-  return response.data;
-};
+import Api from '../../utils/Api';
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -16,7 +11,7 @@ const ResetPassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const mutation = useMutation({
-    mutationFn: (data) => resetPassword(token, data.password),
+    mutationFn: (data) => Api.resetPassword(token, data.password),
     onSuccess: () => {
       toast.success('Password reset successfully.');
       setTimeout(() => navigate('/login'), 3000);
@@ -31,7 +26,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-56px)] bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Reset your password</h2>
       </div>
@@ -47,7 +42,7 @@ const ResetPassword = () => {
                 <input
                   id="password"
                   type="password"
-                  {...register('password', { 
+                  {...register('password', {
                     required: 'New password is required',
                     minLength: {
                       value: 6,
@@ -68,7 +63,7 @@ const ResetPassword = () => {
                 <input
                   id="confirmPassword"
                   type="password"
-                  {...register('confirmPassword', { 
+                  {...register('confirmPassword', {
                     required: 'Confirm password is required',
                     validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
                   })}
@@ -89,7 +84,7 @@ const ResetPassword = () => {
             </div>
           </form>
 
-          {mutation.isError && <div className="mt-2 text-sm text-red-600">Error: {mutation.error.response?.data?.message || 'An error occurred'}</div>}
+          {mutation.isError && <div className="mt-2 text-sm text-red-600">{mutation.error.response?.data?.message || 'An error occurred'}</div>}
           {mutation.isSuccess && <div className="mt-2 text-sm text-green-600">Password reset successfully. Redirecting to login...</div>}
         </div>
       </div>

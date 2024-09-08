@@ -42,24 +42,23 @@ const VacationRequestDetails = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error: {error.message}</div>;
+  if (isError) return <div>{error?.response?.data?.message || 'Error fetching vacation request details'}</div>;
   if (!vacationRequestDetails) return <div>Vacation request not found</div>;
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Vacation Request Details</h2>
       <div className="text-black space-y-4">
-        <p><span className="font-semibold">Employee:</span> {vacationRequestDetails.employee.email}</p>
+        <p><span className="font-semibold">User:</span> {vacationRequestDetails.employee.email}</p>
         <p><span className="font-semibold">Start Date:</span> {new Date(vacationRequestDetails.startDate).toLocaleDateString()}</p>
         <p><span className="font-semibold">End Date:</span> {new Date(vacationRequestDetails.endDate).toLocaleDateString()}</p>
         <p>
           <span className="font-semibold">Status:</span>
-          <span className={`px-2 py-1 rounded-full text-sm font-semibold ${
-            vacationRequestDetails.status === 'Pending' ? 'text-yellow-600' :
+          <span className={`px-2 py-1 rounded-full text-sm font-semibold ${vacationRequestDetails.status === 'Pending' ? 'text-yellow-600' :
             vacationRequestDetails.status === 'Approved' ? 'text-green-800' :
-            vacationRequestDetails.status === 'Declined' ? 'text-red-800' :
-            'bg-gray-100 text-gray-800'
-          }`}>
+              vacationRequestDetails.status === 'Declined' ? 'text-red-800' :
+                'bg-gray-100 text-gray-800'
+            }`}>
             {vacationRequestDetails.status}
           </span>
         </p>

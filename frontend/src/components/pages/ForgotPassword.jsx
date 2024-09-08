@@ -1,20 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
-const forgotPassword = async (email) => {
-  const response = await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
-  return response.data;
-};
+import Api from '../../utils/Api';
 
 const ForgotPassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const mutation = useMutation({
-    mutationFn: forgotPassword,
+    mutationFn: (email) => Api.forgotPassword(email),
     onSuccess: () => {
       toast.success('Password reset email sent. Please check your inbox.');
     },
@@ -28,10 +23,10 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-56px)] bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Forgot your password?</h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-gray-600">
           Enter your email address and we'll send you a link to reset your password.
         </p>
       </div>
@@ -47,7 +42,7 @@ const ForgotPassword = () => {
                 <input
                   id="email"
                   type="email"
-                  {...register('email', { 
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,

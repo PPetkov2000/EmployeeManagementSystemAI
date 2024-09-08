@@ -29,7 +29,7 @@ const VacationRequests = () => {
       <table className="min-w-full bg-white">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Employee</th>
+            <th className="py-2 px-4 border-b">User</th>
             <th className="py-2 px-4 border-b">Start Date</th>
             <th className="py-2 px-4 border-b">End Date</th>
             <th className="py-2 px-4 border-b">Status</th>

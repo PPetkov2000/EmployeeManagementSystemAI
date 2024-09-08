@@ -1,22 +1,14 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { toast } from 'react-toastify';
-
-const changePassword = async (passwordData) => {
-  const token = localStorage.getItem('auth-token');
-  const response = await axios.post('http://localhost:5000/api/auth/change-password', passwordData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
-};
+import Api from '../../utils/Api';
 
 const ChangePassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const mutation = useMutation({
-    mutationFn: changePassword,
+    mutationFn: (passwordData) => Api.changePassword(passwordData),
     onSuccess: () => {
       toast.success('Password changed successfully.');
     },
@@ -30,7 +22,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-80px)] bg-gray-100 flex flex-col justify-center sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Change your password</h2>
       </div>
@@ -61,7 +53,7 @@ const ChangePassword = () => {
                 <input
                   id="newPassword"
                   type="password"
-                  {...register('newPassword', { 
+                  {...register('newPassword', {
                     required: 'New password is required',
                     minLength: {
                       value: 6,
@@ -82,7 +74,7 @@ const ChangePassword = () => {
                 <input
                   id="confirmNewPassword"
                   type="password"
-                  {...register('confirmNewPassword', { 
+                  {...register('confirmNewPassword', {
                     required: 'Confirm new password is required',
                     validate: (value, formValues) => value === formValues.newPassword || 'Passwords do not match'
                   })}
@@ -103,7 +95,7 @@ const ChangePassword = () => {
             </div>
           </form>
 
-          {mutation.isError && <div className="mt-2 text-sm text-red-600">Error: {mutation.error.response?.data?.message || 'An error occurred'}</div>}
+          {mutation.isError && <div className="mt-2 text-sm text-red-600">{mutation.error.response?.data?.message || 'An error occurred'}</div>}
           {mutation.isSuccess && <div className="mt-2 text-sm text-green-600">Password changed successfully.</div>}
         </div>
       </div>

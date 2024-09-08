@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 import Api from '../../utils/Api';
 
 const ManagerDashboard = () => {
-  const { data: performanceData, isLoading } = useQuery({ queryKey: ['performanceData'], queryFn: Api.getEmployeePerformance });
+  const userState = useAuth();
+  const { data: performanceData, isLoading, error } = useQuery({ queryKey: ['performanceData'], queryFn: () => Api.getUserPerformance(userState.user?._id), enabled: !!userState.user });
 
   if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error?.response?.data?.message || 'Error fetching performance data'}</div>;
+  if (!performanceData || performanceData.length === 0) return <div>No performance data available</div>;
 
   return (
     <div className="container mx-auto p-4">

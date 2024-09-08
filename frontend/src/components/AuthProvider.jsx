@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-[calc(100vh-56px)] bg-gray-100">
         <div className="text-2xl font-semibold text-gray-700">Loading...</div>
       </div>
     );
