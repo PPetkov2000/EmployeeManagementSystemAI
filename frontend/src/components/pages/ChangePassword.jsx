@@ -11,6 +11,11 @@ const ChangePassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const getInputClassName = (fieldName) => {
+    const baseClasses = "bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
+    return `${baseClasses} ${errors[fieldName] ? "border-red-500" : "border-gray-300"}`;
+  };
+
   const mutation = useMutation({
     mutationFn: (passwordData) => Api.changePassword(passwordData),
     onSuccess: () => {
@@ -43,12 +48,12 @@ const ChangePassword = () => {
                   id="currentPassword"
                   type={showCurrentPassword ? "text" : "password"}
                   {...register('currentPassword', { required: 'Current password is required' })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('currentPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.currentPassword ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -71,12 +76,12 @@ const ChangePassword = () => {
                       message: 'Password must be at least 6 characters',
                     }
                   })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('newPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.newPassword ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showNewPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -96,12 +101,12 @@ const ChangePassword = () => {
                     required: 'Confirm new password is required',
                     validate: (value, formValues) => value === formValues.newPassword || 'Passwords do not match'
                   })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('confirmNewPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.confirmNewPassword ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>

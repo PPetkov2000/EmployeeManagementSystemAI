@@ -50,6 +50,11 @@ const EditUser = () => {
         }
     };
 
+    const getInputClassName = (fieldName) => {
+        const baseClasses = "bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600";
+        return `${baseClasses} ${errors[fieldName] ? "border-red-500" : ""}`;
+    };
+
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error loading user data</div>;
     if (!user) return <div>User not found</div>;
@@ -62,7 +67,7 @@ const EditUser = () => {
                     <div className="mt-4">
                         <label className="block text-black" htmlFor="email">Email</label>
                         <input type="email" placeholder="Email" id="email"
-                            className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                            className={getInputClassName('email')}
                             {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } })}
                         />
                         {errors.email && <span className="text-xs text-red-600">{errors.email.message}</span>}
@@ -73,7 +78,7 @@ const EditUser = () => {
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
                             id="password"
-                            className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                            className={getInputClassName('password')}
                             {...register('password', {
                                 minLength: { value: 6, message: 'Password must be at least 6 characters' }
                             })}
@@ -81,7 +86,7 @@ const EditUser = () => {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="bg-transparent border-0 absolute right-2 top-[57%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                            className={`bg-transparent border-0 absolute right-2 ${errors.password ? 'top-[35%]' : 'top-[57%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                         >
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
@@ -92,8 +97,12 @@ const EditUser = () => {
                         <div>
                             <label className="block text-black" htmlFor="username">Username</label>
                             <input type="text" placeholder="Username" id="username"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                {...register('username', { required: 'Username is required' })}
+                                className={getInputClassName('username')}
+                                {...register('username', {
+                                    required: 'Username is required',
+                                    minLength: { value: 3, message: 'Username must be at least 3 characters long' },
+                                    maxLength: { value: 20, message: 'Username must not exceed 20 characters' }
+                                })}
                             />
                             {errors.username && <span className="text-xs text-red-600">{errors.username.message}</span>}
                         </div>
@@ -102,23 +111,29 @@ const EditUser = () => {
                         <div>
                             <label className="block text-black" htmlFor="firstName">First Name</label>
                             <input type="text" placeholder="First Name" id="firstName"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                {...register('firstName', { required: 'First name is required' })}
+                                className={getInputClassName('firstName')}
+                                {...register('firstName', {
+                                    required: 'First name is required',
+                                    pattern: { value: /^[A-Za-z]+$/, message: 'First name should only contain letters' }
+                                })}
                             />
                             {errors.firstName && <span className="text-xs text-red-600">{errors.firstName.message}</span>}
                         </div>
                         <div className="mt-4">
                             <label className="block text-black" htmlFor="lastName">Last Name</label>
                             <input type="text" placeholder="Last Name" id="lastName"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                {...register('lastName', { required: 'Last name is required' })}
+                                className={getInputClassName('lastName')}
+                                {...register('lastName', {
+                                    required: 'Last name is required',
+                                    pattern: { value: /^[A-Za-z]+$/, message: 'Last name should only contain letters' }
+                                })}
                             />
                             {errors.lastName && <span className="text-xs text-red-600">{errors.lastName.message}</span>}
                         </div>
                         <div className="mt-4">
                             <label className="block text-black" htmlFor="position">Position</label>
                             <input type="text" placeholder="Position" id="position"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                className={getInputClassName('position')}
                                 {...register('position', { required: 'Position is required' })}
                             />
                             {errors.position && <span className="text-xs text-red-600">{errors.position.message}</span>}
@@ -126,7 +141,7 @@ const EditUser = () => {
                         <div className="mt-4">
                             <label className="block text-black" htmlFor="department">Department</label>
                             <input type="text" placeholder="Department" id="department"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                className={getInputClassName('department')}
                                 {...register('department', { required: 'Department is required' })}
                             />
                             {errors.department && <span className="text-xs text-red-600">{errors.department.message}</span>}
@@ -134,7 +149,7 @@ const EditUser = () => {
                         <div className="mt-4">
                             <label className="block text-black" htmlFor="salary">Salary</label>
                             <input type="number" placeholder="Salary" id="salary"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                className={getInputClassName('salary')}
                                 {...register('salary', { required: 'Salary is required', min: { value: 0, message: 'Salary must be positive' } })}
                             />
                             {errors.salary && <span className="text-xs text-red-600">{errors.salary.message}</span>}
@@ -142,7 +157,7 @@ const EditUser = () => {
                         <div className="mt-4">
                             <label className="block text-black" htmlFor="vacationDays">Vacation Days</label>
                             <input type="number" placeholder="Vacation Days" id="vacationDays"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                className={getInputClassName('vacationDays')}
                                 {...register('vacationDays', { required: 'Vacation days are required', min: { value: 0, message: 'Vacation days must be non-negative' } })}
                             />
                             {errors.vacationDays && <span className="text-xs text-red-600">{errors.vacationDays.message}</span>}
@@ -151,7 +166,7 @@ const EditUser = () => {
                             <label className="block text-black" htmlFor="role">Role</label>
                             <select
                                 id="role"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
+                                className={getInputClassName('role')}
                                 {...register('role', { required: 'Role is required' })}
                             >
                                 <option value="user">User</option>
@@ -166,7 +181,7 @@ const EditUser = () => {
                                 <img src={`${import.meta.env.VITE_API_URL}${user.avatar}`} alt="Current avatar" className="w-20 h-20 object-cover rounded-full mb-2" />
                             )}
                             <input type="file" id="avatar" accept="image/*"
-                                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                className={getInputClassName('avatar')}
                                 onChange={handleAvatarChange}
                             />
                         </div>

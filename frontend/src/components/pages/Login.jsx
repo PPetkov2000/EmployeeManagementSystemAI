@@ -23,7 +23,7 @@ const Login = () => {
   };
 
   const getInputClassName = (fieldName) => {
-    const baseClasses = "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
+    const baseClasses = "bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 sm:text-sm";
     return `${baseClasses} ${errors[fieldName]
       ? "border-red-500 text-red-900"
       : "border-gray-300 bg-[#ddd] text-black"
@@ -83,7 +83,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.password ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>

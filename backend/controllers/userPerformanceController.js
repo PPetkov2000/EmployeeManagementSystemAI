@@ -31,7 +31,7 @@ const calculatePerformanceScore = (performance) => {
 
 const getAllUserPerformances = async (req, res) => {
     try {
-        const performances = await UserPerformance.find().populate('userId', 'firstName lastName');
+        const performances = await UserPerformance.find().populate('userId', '-password');
 
         const formattedPerformances = performances.map(performance => ({
             userId: performance.userId._id,
@@ -67,15 +67,16 @@ const createPerformance = async (req, res) => {
 
 const getPerformance = async (req, res) => {
     try {
-        const performance = await UserPerformance.findOne({ userId: req.params.userId }).sort({ updatedAt: 'desc' });
-        const allPerformances = await UserPerformance.find().sort({ performanceScore: "desc" });
+        const currentUserPerformance = await UserPerformance.findOne({ userId: req.params.userId }).sort({ updatedAt: 'desc' }).populate('userId', '-password');
+        const allPerformances = await UserPerformance.find().sort({ performanceScore: "desc" }).populate('userId', '-password');
         const topPerformers = allPerformances.slice(0, 5);
         const lowPerformers = allPerformances.slice(-5).reverse();
 
         res.json({
-            performance: performance || {},
-            topPerformers: topPerformers.map(p => ({ userId: p.userId, performanceScore: p.performanceScore })),
-            lowPerformers: lowPerformers.map(p => ({ userId: p.userId, performanceScore: p.performanceScore }))
+            currentUserPerformance: currentUserPerformance || {},
+            allPerformances: allPerformances || [],
+            topPerformers: topPerformers || [],
+            lowPerformers: lowPerformers || []
         });
     } catch (error) {
         logger.warn(`Error getting performance: ${error.message}`);

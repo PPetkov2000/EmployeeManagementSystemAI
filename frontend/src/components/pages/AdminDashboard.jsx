@@ -31,14 +31,14 @@ const AdminDashboard = () => {
   })) || [];
 
   const performanceChartData = [
-    ...performanceData.topPerformers.map(user => ({
-      name: `${user.firstName} ${user.lastName}`,
-      score: user.performanceScore,
+    ...performanceData.topPerformers.map((performance) => ({
+      name: `${performance.userId.firstName} ${performance.userId.lastName}`,
+      score: performance.performanceScore,
       category: 'Top Performers'
     })),
-    ...performanceData.lowPerformers.map(user => ({
-      name: `${user.firstName} ${user.lastName}`,
-      score: user.performanceScore,
+    ...performanceData.lowPerformers.map((performance) => ({
+      name: `${performance.userId.firstName} ${performance.userId.lastName}`,
+      score: performance.performanceScore,
       category: 'Low Performers'
     }))
   ].sort((a, b) => b.score - a.score);

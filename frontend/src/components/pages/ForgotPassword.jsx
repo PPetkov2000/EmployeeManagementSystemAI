@@ -18,6 +18,11 @@ const ForgotPassword = () => {
     },
   });
 
+  const getInputClassName = (fieldName) => {
+    const baseClasses = "bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
+    return `${baseClasses} ${errors[fieldName] ? "border-red-500" : "border-gray-300"}`;
+  };
+
   const onSubmit = (data) => {
     mutation.mutate(data.email);
   };
@@ -49,7 +54,7 @@ const ForgotPassword = () => {
                       message: 'Invalid email address',
                     }
                   })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('email')}
                 />
                 {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>}
               </div>

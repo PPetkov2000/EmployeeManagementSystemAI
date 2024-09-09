@@ -13,6 +13,11 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const getInputClassName = (fieldName) => {
+    const baseClasses = "bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
+    return `${baseClasses} ${errors[fieldName] ? "border-red-500" : "border-gray-300"}`;
+  };
+
   const mutation = useMutation({
     mutationFn: (data) => Api.resetPassword(token, data.password),
     onSuccess: () => {
@@ -52,12 +57,12 @@ const ResetPassword = () => {
                       message: 'Password must be at least 6 characters',
                     }
                   })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.password ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -77,12 +82,12 @@ const ResetPassword = () => {
                     required: 'Confirm password is required',
                     validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
                   })}
-                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={getInputClassName('confirmPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  className={`bg-transparent border-0 absolute right-2 ${errors.confirmPassword ? 'top-[28%]' : 'top-[50%]'} transform -translate-y-1/2 text-gray-500 focus:outline-none`}
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>

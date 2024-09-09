@@ -13,8 +13,8 @@ const UserList = () => {
   const queryClient = useQueryClient();
 
   const { data: usersData, isLoading, error } = useQuery({
-    queryKey: ['users', currentPage, searchTerm],
-    queryFn: () => Api.getUsers(currentPage, 10, searchTerm),
+    queryKey: ['users', currentPage, searchParams.get('search')],
+    queryFn: () => Api.getUsers(currentPage, 10, searchParams.get('search') || ''),
     select: (data) => data.data,
   });
 
@@ -29,22 +29,17 @@ const UserList = () => {
     },
   });
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchTerm !== searchParams.get('search')) {
-        setSearchParams({ page: '1', search: searchTerm });
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, setSearchParams, searchParams]);
-
   const handlePageChange = (newPage) => {
-    setSearchParams({ page: newPage.toString(), search: searchTerm });
+    setSearchParams({ page: newPage.toString(), search: searchParams.get('search') || '' });
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchParams({ page: '1', search: searchTerm });
   };
 
   return (
@@ -52,27 +47,32 @@ const UserList = () => {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">User List</h1>
         <div className="flex items-center">
-          <div className="relative mr-4">
+          <form onSubmit={handleSearchSubmit} className="relative mr-4">
             <input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <MdSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            {!searchTerm &&
+              <button type="submit" className="bg-transparent border-0 focus:outline-none absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <MdSearch />
+              </button>
+            }
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => {
                   setSearchTerm('');
                   setSearchParams({ page: '1', search: '' });
                 }}
-                className="bg-transparent border-0 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                className="bg-transparent border-0 absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
               >
                 &#x2715;
               </button>
             )}
-          </div>
+          </form>
           <Link to="/users/create-user" className="flex items-center bg-green-500 hover:bg-green-700 text-white hover:text-white font-bold py-2 px-4 rounded">
             <FaPlus className="mr-2" /> Create User
           </Link>
