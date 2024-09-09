@@ -6,12 +6,12 @@ import { useAuth } from '../AuthProvider';
 import Api from '../../utils/Api';
 
 const MyVacationRequests = () => {
-  const { user } = useAuth();
+  const authState = useAuth();
 
   const { data: vacationRequests, isLoading, error } = useQuery({
-    queryKey: ['myVacationRequests', user?._id],
-    queryFn: () => Api.getVacationRequestsByUserId(user?._id),
-    enabled: !!user?._id,
+    queryKey: ['myVacationRequests', authState?.user?._id],
+    queryFn: () => Api.getVacationRequestsByUserId(authState?.user?._id),
+    enabled: !!authState?.user?._id,
     select: (data) => data.data
   });
 
@@ -61,7 +61,7 @@ const MyVacationRequests = () => {
                       <Link to={`/vacation-requests/${request._id}`} className="text-blue-600 hover:text-blue-900">
                         <FaEye className="h-5 w-5" />
                       </Link>
-                      {(user.role === 'manager' || user.role === 'admin') && request.status === 'Pending' && (
+                      {(authState?.user?.role === 'manager' || authState?.user?.role === 'admin') && request.status === 'Pending' && (
                         <>
                           <button
                             onClick={() => handleApprove(request._id)}

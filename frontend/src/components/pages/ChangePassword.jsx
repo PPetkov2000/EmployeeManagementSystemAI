@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Api from '../../utils/Api';
 
 const ChangePassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (passwordData) => Api.changePassword(passwordData),
@@ -34,13 +38,20 @@ const ChangePassword = () => {
               <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
                 Current Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="currentPassword"
-                  type="password"
+                  type={showCurrentPassword ? "text" : "password"}
                   {...register('currentPassword', { required: 'Current password is required' })}
-                  className="bg-[#ddd] appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.currentPassword && <p className="mt-2 text-sm text-red-600">{errors.currentPassword.message}</p>}
               </div>
             </div>
@@ -49,10 +60,10 @@ const ChangePassword = () => {
               <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
                 New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="newPassword"
-                  type="password"
+                  type={showNewPassword ? "text" : "password"}
                   {...register('newPassword', {
                     required: 'New password is required',
                     minLength: {
@@ -60,8 +71,15 @@ const ChangePassword = () => {
                       message: 'Password must be at least 6 characters',
                     }
                   })}
-                  className="bg-[#ddd] appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.newPassword && <p className="mt-2 text-sm text-red-600">{errors.newPassword.message}</p>}
               </div>
             </div>
@@ -70,16 +88,23 @@ const ChangePassword = () => {
               <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-700">
                 Confirm New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="confirmNewPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   {...register('confirmNewPassword', {
                     required: 'Confirm new password is required',
                     validate: (value, formValues) => value === formValues.newPassword || 'Passwords do not match'
                   })}
-                  className="bg-[#ddd] appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.confirmNewPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmNewPassword.message}</p>}
               </div>
             </div>

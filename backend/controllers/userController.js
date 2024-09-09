@@ -1,11 +1,39 @@
-const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().sort({ updatedAt: 'desc' }).select('-password');
-        res.json(users);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
+
+        const searchQuery = {
+            $or: [
+                { email: { $regex: search, $options: 'i' } },
+                { username: { $regex: search, $options: 'i' } },
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+                { position: { $regex: search, $options: 'i' } },
+                { department: { $regex: search, $options: 'i' } },
+            ]
+        };
+
+        const totalUsers = await User.countDocuments(searchQuery);
+        const users = await User.find(searchQuery)
+            .sort({ updatedAt: 'desc' })
+            .skip(skip)
+            .limit(limit)
+            .select('-password');
+
+        res.json({
+            users,
+            currentPage: page,
+            totalPages: Math.ceil(totalUsers / limit),
+            totalUsers
+        });
     } catch (error) {
         logger.error('Error in getAllUsers:', error);
         res.status(500).json({ message: `Error fetching users: ${error.message}` });
@@ -43,8 +71,14 @@ const updateUser = async (req, res) => {
         if (vacationDays !== undefined) user.vacationDays = vacationDays;
         if (isVerified !== undefined) user.isVerified = isVerified;
         if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            user.password = hashedPassword;
+            user.password = password;
+        }
+        if (req.file) {
+            const oldAvatarPath = path.join(__dirname, '..', 'public', user.avatar);
+            if (fs.existsSync(oldAvatarPath)) {
+                fs.unlinkSync(oldAvatarPath);
+            }
+            user.avatar = `/avatars/${req.file.filename}`;
         }
         await user.save();
         res.json({ message: 'User updated successfully' });
@@ -70,10 +104,12 @@ const deleteUser = async (req, res) => {
 const createUser = async (req, res) => {
     try {
         const { email, password, username, firstName, lastName, position, department, role, salary, vacationDays, isVerified } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ email, password: hashedPassword, username, firstName, lastName, position, department, role, salary, vacationDays, isVerified });
+        const user = new User({ email, password, username, firstName, lastName, position, department, role, salary, vacationDays, isVerified });
+        if (req.file) {
+            user.avatar = `/avatars/${req.file.filename}`;
+        }
         await user.save();
-        res.status(201).json(user);
+        res.status(201).json({ message: 'User created successfully', user });
     } catch (error) {
         logger.error('Error in createUser:', error);
         res.status(500).json({ message: `Error creating user: ${error.message}` });

@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Api from '../../utils/Api';
 
 const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (data) => Api.resetPassword(token, data.password),
@@ -38,10 +41,10 @@ const ResetPassword = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   {...register('password', {
                     required: 'New password is required',
                     minLength: {
@@ -49,8 +52,15 @@ const ResetPassword = () => {
                       message: 'Password must be at least 6 characters',
                     }
                   })}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>}
               </div>
             </div>
@@ -59,16 +69,23 @@ const ResetPassword = () => {
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirm New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   {...register('confirmPassword', {
                     required: 'Confirm password is required',
                     validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
                   })}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.confirmPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmPassword.message}</p>}
               </div>
             </div>

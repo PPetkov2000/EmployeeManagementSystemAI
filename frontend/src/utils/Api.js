@@ -14,14 +14,22 @@ const Api = {
   logout: () => axiosInstance.post('/auth/logout'),
   forgotPassword: (email) => axiosInstance.post(`${API_URL}/auth/forgot-password`, { email }),
   resetPassword: (token, newPassword) => axiosInstance.post(`${API_URL}/auth/reset-password/:token?`, { token, newPassword }),
-  changePassword: (oldPassword, newPassword) => axiosInstance.post(`${API_URL}/auth/change-password`, { oldPassword, newPassword }),
+  changePassword: (oldPassword, newPassword) => axiosInstance.patch(`${API_URL}/auth/change-password`, { oldPassword, newPassword }),
   verifyEmail: (token) => axiosInstance.get(`${API_URL}/auth/verify-email/${token}`),
   checkAuth: () => axiosInstance.get('/auth/check'),
 
-  getUsers: () => axiosInstance.get(`${API_URL}/users`),
+  getUsers: (page = 1, limit = 10, search = '') => axiosInstance.get(`${API_URL}/users?page=${page}&limit=${limit}&search=${search}`),
   getUser: (id) => axiosInstance.get(`${API_URL}/users/${id}`),
-  createUser: (userData) => axiosInstance.post(`${API_URL}/users`, userData),
-  updateUser: (id, userData) => axiosInstance.put(`${API_URL}/users/${id}`, userData),
+  createUser: (userData) => axiosInstance.post(`${API_URL}/users`, userData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
+  updateUser: (id, userData) => axiosInstance.put(`${API_URL}/users/${id}`, userData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
   deleteUser: (id) => axiosInstance.delete(`${API_URL}/users/${id}`),
   getUserStats: (id) => axiosInstance.get(`${API_URL}/users/${id}/stats`),
 

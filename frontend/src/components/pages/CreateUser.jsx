@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Api from '../../utils/Api';
 
 const CreateUser = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const [avatar, setAvatar] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const createUserMutation = useMutation({
     mutationFn: Api.createUser,
@@ -19,7 +22,21 @@ const CreateUser = () => {
   });
 
   const onSubmit = (data) => {
-    createUserMutation.mutate(data);
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+    if (avatar) {
+      formData.append('avatar', avatar);
+    }
+    createUserMutation.mutate(formData);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+      setAvatar(file);
+    } else {
+      toast.error('Please select a valid image file (max 5MB)');
+    }
   };
 
   return (
@@ -35,15 +52,25 @@ const CreateUser = () => {
             />
             {errors.email && <span className="text-xs text-red-600">{errors.email.message}</span>}
           </div>
-          <div className="mt-4">
+          <div className="mt-4 relative">
             <label className="block text-black" htmlFor="password">Password</label>
-            <input type="password" placeholder="Password" id="password"
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              id="password"
               className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
               {...register('password', {
                 required: 'Password is required',
                 minLength: { value: 6, message: 'Password must be at least 6 characters long' }
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="bg-transparent border-0 absolute right-2 top-[72%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
             {errors.password && <span className="text-xs text-red-600">{errors.password.message}</span>}
           </div>
           <div className="mt-4">
@@ -117,6 +144,13 @@ const CreateUser = () => {
                 <option value="admin">Admin</option>
               </select>
               {errors.role && <span className="text-xs text-red-600">{errors.role.message}</span>}
+            </div>
+            <div className="mt-4">
+              <label className="block text-black" htmlFor="avatar">Avatar</label>
+              <input type="file" id="avatar" accept="image/*"
+                className="bg-[#ddd] text-black w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                onChange={handleAvatarChange}
+              />
             </div>
             <div className="mt-4">
               <label className="flex items-center text-black">

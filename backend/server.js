@@ -3,9 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 const logger = require('./utils/logger');
 const { cookie_auth } = require('./config');
-
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const userPerformanceRoutes = require('./routes/userPerformanceRoutes');
@@ -15,20 +15,28 @@ const seedRoutes = require('./routes/seedRoutes');
 
 const app = express();
 
+morgan.token('user', (req) => req.user ? req.user._id : 'unauthenticated');
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :user', {
+  stream: {
+    // write: (message) => logger.http(message.trim())
+    write: (message) => {
+      const logObject = {
+        method: message.split(' ')[0],
+        url: message.split(' ')[1],
+        status: message.split(' ')[2],
+        responseTime: message.split(' ')[3],
+        user: message.split(' ')[4]
+      }
+      logger.info(JSON.stringify(logObject));
+    }
+  }
+}));
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: cookie_auth
 }));
 app.use(express.json());
 cookie_auth && app.use(cookieParser());
-
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.url}`, {
-    ip: req.ip,
-    user: req.user ? req.user._id : 'unauthenticated'
-  });
-  next();
-});
 
 mongoose.connect(process.env.MONGODB_URI);
 

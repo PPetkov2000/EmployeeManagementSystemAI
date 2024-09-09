@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../AuthProvider';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { login } = useAuth();
+  const authState = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: login,
+    mutationFn: authState?.login,
     onError: (error) => {
       toast.error(error.response?.data?.message || 'An error occurred during login');
     },
@@ -63,10 +66,10 @@ const Login = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   {...register('password', {
                     required: 'Password is required',
@@ -77,6 +80,13 @@ const Login = () => {
                   })}
                   className={getInputClassName('password')}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>}
               </div>
             </div>

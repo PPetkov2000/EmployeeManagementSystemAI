@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../AuthProvider';
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { register: registerUser } = useAuth();
+  const authState = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: registerUser,
+    mutationFn: authState?.register,
     onError: (error) => {
       toast.error(error.response?.data?.message || 'An error occurred during registration');
     },
@@ -54,10 +56,10 @@ const Register = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   {...register('password', {
                     required: 'Password is required',
                     minLength: {
@@ -67,6 +69,13 @@ const Register = () => {
                   })}
                   className="bg-[#ddd] text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="bg-transparent border-0 absolute right-2 top-[50%] transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>}
               </div>
             </div>

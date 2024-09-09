@@ -9,7 +9,7 @@ const VacationRequestDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const authState = useAuth();
 
   const { data: vacationRequestDetails, isLoading, isError, error } = useQuery({
     queryKey: ['vacationRequest', id],
@@ -41,9 +41,9 @@ const VacationRequestDetails = () => {
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>{error?.response?.data?.message || 'Error fetching vacation request details'}</div>;
-  if (!vacationRequestDetails) return <div>Vacation request not found</div>;
+  if (isLoading) return <div className='flex justify-center items-center h-screen'><Loader /></div>;
+  if (isError) return <div className='flex justify-center items-center h-screen'>{error?.response?.data?.message || 'Error fetching vacation request details'}</div>;
+  if (!vacationRequestDetails) return <div className='flex justify-center items-center h-screen'>Vacation request not found</div>;
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
@@ -65,7 +65,7 @@ const VacationRequestDetails = () => {
         <p><span className="font-semibold">Submitted On:</span> {new Date(vacationRequestDetails.createdAt).toLocaleString()}</p>
         <p><span className="font-semibold">Reason:</span> {vacationRequestDetails.reason || 'No reason provided'}</p>
       </div>
-      {(user.role === 'manager' || user.role === 'admin') && vacationRequestDetails.status === 'Pending' && (
+      {(authState?.user?.role === 'manager' || authState?.user?.role === 'admin') && vacationRequestDetails.status === 'Pending' && (
         <div className="mt-8 flex justify-between">
           <button
             onClick={() => approveMutation.mutate()}

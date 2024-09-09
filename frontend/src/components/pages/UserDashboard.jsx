@@ -10,10 +10,11 @@ import Api from '../../utils/Api';
 const UserDashboard = () => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset } = useForm();
-  const { user } = useAuth();
+  const authState = useAuth();
   const navigate = useNavigate();
 
-  const mutation = useMutation({ mutationFn: Api.requestVacation,
+  const mutation = useMutation({
+    mutationFn: Api.requestVacation,
     onSuccess: () => {
       queryClient.invalidateQueries(['vacationDays']);
       toast.success('Vacation request submitted!');
@@ -33,17 +34,17 @@ const UserDashboard = () => {
     <div className="container mx-auto p-4 max-w-3xl">
       <h1 className="text-center text-2xl font-bold mb-4">User Dashboard</h1>
       <div className="mb-4">
-        <Link 
-          to="/my-vacation-requests" 
+        <Link
+          to="/my-vacation-requests"
           className="inline-block px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:text-white hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
         >
           View My Vacation Requests
         </Link>
       </div>
       <div className="mb-4">
-        <h2 className="text-center text-xl font-semibold mb-5">Vacation Days: {user?.vacationDays}</h2>
+        <h2 className="text-center text-xl font-semibold mb-5">Vacation Days: {authState?.user?.vacationDays}</h2>
         <div className="flex justify-center">
-          <BarChart width={600} height={300} data={user?.vacationDays}>
+          <BarChart width={600} height={300} data={authState?.user?.vacationDays}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis domain={[0, 1000]} />
@@ -57,10 +58,10 @@ const UserDashboard = () => {
         <div className="mb-2">
           <label htmlFor="startDate" className="block text-sm font-bold mb-2">Start Date</label>
           <div className="relative">
-            <input 
-              type="date" 
-              id="startDate" 
-              {...register('startDate', { required: true })} 
+            <input
+              type="date"
+              id="startDate"
+              {...register('startDate', { required: true })}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer"
             />
             <div className="absolute inset-0" onClick={() => {
@@ -78,10 +79,10 @@ const UserDashboard = () => {
         <div className="mb-2">
           <label htmlFor="endDate" className="block text-sm font-bold mb-2">End Date</label>
           <div className="relative">
-            <input 
-              type="date" 
-              id="endDate" 
-              {...register('endDate', { required: true })} 
+            <input
+              type="date"
+              id="endDate"
+              {...register('endDate', { required: true })}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer"
             />
             <div className="absolute inset-0" onClick={() => {
@@ -96,8 +97,8 @@ const UserDashboard = () => {
             }}></div>
           </div>
         </div>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Request Vacation

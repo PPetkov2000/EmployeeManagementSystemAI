@@ -18,11 +18,10 @@ const register = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({
     name,
     email,
-    password: hashedPassword,
+    password,
     ...(email_verification && {
       verificationToken: crypto.randomBytes(20).toString('hex'),
       isVerified: false
@@ -128,7 +127,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Invalid or expired token' });
   }
 
-  user.password = await bcrypt.hash(password, 10);
+  user.password = password;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
   await user.save();
@@ -146,14 +145,14 @@ const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   logger.info(`Attempting to change password for user: ${req.user._id}`);
 
-  const user = await User.findById(req.userId);
+  const user = await User.findById(req.user._id);
 
   if (!user || !await bcrypt.compare(currentPassword, user.password)) {
     logger.warn(`Password change failed for user: ${user._id}`);
-    return res.status(401).json({ message: 'Invalid current password.' });
+    return res.status(401).json({ message: 'Password change failed.' });
   }
 
-  user.password = await bcrypt.hash(newPassword, 10);
+  user.password = newPassword;
   await user.save();
 
   logger.info(`Password changed successfully for user: ${user._id}`);
@@ -176,6 +175,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
   user.isVerified = true;
   user.verificationToken = undefined;
+  user.verificationTokenExpires = undefined;
   await user.save();
 
   logger.info(`Email verified successfully for user: ${user._id}`);
